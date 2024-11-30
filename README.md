@@ -1,0 +1,1 @@
+# Tarea6_Mecanica_Estadistica_Avanzada
