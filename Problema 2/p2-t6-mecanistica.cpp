@@ -4,6 +4,15 @@
 #include<random>
 #include<vector>
 
+void update_averages(double value, std::vector<double>& averages, int index, int steps) {
+    if(index + 1 >= averages.size()){
+        std::cerr << "Error: Index out of bounds.";
+        return;
+    }
+    averages[index] += value / steps;
+    averages[index + 1] += value * value / steps;
+}
+
 int main(){
     std::random_device dev;
     std::mt19937 gen(dev());
@@ -20,13 +29,7 @@ int main(){
     std::vector<double> velocity;
     std::vector<double> position;
 
-    double avrg_f = 0;
-    double avrg_x = 0;
-    double avrg_v = 0;
-
-    double avrg_f2 = 0;
-    double avrg_x2 = 0;
-    double avrg_v2 = 0;
+    std::vector<double> averages(6, 0);
 
     for(int i = 0; i <= steps; ++i){
         double t = i * dt;
@@ -38,29 +41,16 @@ int main(){
         v += dt * f;
         x += dt * v;
 
-        avrg_f += f;
-        avrg_x += x;
-        avrg_v += v;
-
-        avrg_f2 += f * f;
-        avrg_x2 += x * x;
-        avrg_v2 += v * v;        
+        update_averages(f, averages, 0, steps);
+        update_averages(x, averages, 2, steps);
+        update_averages(v, averages, 4, steps);
     }
-
-    avrg_f /= steps;
-    avrg_x /= steps;
-    avrg_v /= steps;
-
-    avrg_f2 /= steps;
-    avrg_x2 /= steps;
-    avrg_v2 /= steps;
 
     std::ostringstream txv;
     txv << "data/time_position_velocity_" << steps << ".txt";
-
     std::ofstream file(txv.str());
-    if(file.is_open()){
-        for(size_t i = 0; i < time.size(); ++i){
+    if (file.is_open()) {
+        for (size_t i = 0; i < time.size(); ++i) {
             file << time[i] << ", " << position[i] << ", " << velocity[i] << std::endl;
         }
         file.close();
@@ -71,15 +61,16 @@ int main(){
 
     std::ostringstream avrgs;
     avrgs << "data/averages_" << steps << ".txt";
-    std::ofstream averages(avrgs.str());
-    if(averages.is_open()){
-        averages << "Average position: " << avrg_x << "\nAverage velocity: " << avrg_v << "\nAverage noise: " << avrg_f << std::endl;
-        averages << "==========" << std::endl;
-        averages << "Average squared position: " << avrg_x2 << "\nAverage squared velocity: " << avrg_v2 << "\nAverage squared noise: " << avrg_f2;
-        averages.close();
+    std::ofstream averages_file(avrgs.str());
+    if (averages_file.is_open()) {
+        averages_file << "Average position: " << averages[2] << "\nAverage velocity: " << averages[4]
+                      << "\nAverage noise: " << averages[0] << std::endl;
+        averages_file << "==========" << std::endl;
+        averages_file << "Average squared position: " << averages[3] << "\nAverage squared velocity: " << averages[5]
+                      << "\nAverage squared noise: " << averages[1];
+        averages_file.close();
     } else {
         std::cerr << "Unable to open file.";
         return 1;
     }
-    return 0;
 }
