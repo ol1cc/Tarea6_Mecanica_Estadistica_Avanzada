@@ -28,16 +28,19 @@ int main(){
     std::vector<double> time;
     std::vector<double> velocity;
     std::vector<double> position;
+    std::vector<double> f_noise;
 
     std::vector<double> averages(6, 0);
 
     for(int i = 0; i <= steps; ++i){
         double t = i * dt;
+        double f = noise(gen);
+
         time.push_back(t);
         velocity.push_back(v);
         position.push_back(x);
+        f_noise.push_back(f);
 
-        double f = noise(gen);
         v += dt * f;
         x += dt * v;
 
@@ -51,7 +54,7 @@ int main(){
     std::ofstream file(txv.str());
     if (file.is_open()) {
         for (size_t i = 0; i < time.size(); ++i) {
-            file << time[i] << ", " << position[i] << ", " << velocity[i] << std::endl;
+            file << time[i] << "\t" << position[i] << "\t" << velocity[i] << "\t" << f_noise[i] << std::endl;
         }
         file.close();
     } else {

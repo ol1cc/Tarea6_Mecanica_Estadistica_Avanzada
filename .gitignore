@@ -3,3 +3,6 @@
 
 # Ignore log files
 *.log
+
+#Ignore specific files
+/Problema 3/plot3-1.gnu

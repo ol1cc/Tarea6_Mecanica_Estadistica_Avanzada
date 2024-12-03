@@ -1,7 +1,0 @@
-Average position: 137.552
-Average velocity: 0.675511
-Average noise: 0.00402421
-==========
-Average squared position: 39007.3
-Average squared velocity: 1.90653
-Average squared noise: 0.332634
